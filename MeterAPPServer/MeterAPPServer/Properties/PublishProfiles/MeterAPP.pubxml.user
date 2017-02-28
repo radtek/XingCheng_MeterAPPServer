@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+您 Web 项目的发布/打包进程将使用此文件。您可以通过编辑此 MSBuild 文件
+来自定义该进程的行为。若要了解与此相关的详细信息，请访问 http://go.microsoft.com/fwlink/?LinkID=208121。
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>D:\P-自来水\APPServer</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="bin/FluentData.dll">
+      <publishTime>04/07/2016 23:14:44</publishTime>
+    </File>
+    <File Include="bin/MeterAPPServer.dll">
+      <publishTime>02/10/2017 22:53:37</publishTime>
+    </File>
+    <File Include="bin/MeterAPPServer.pdb">
+      <publishTime>02/10/2017 22:53:37</publishTime>
+    </File>
+    <File Include="Global.asax">
+      <publishTime>04/29/2016 10:27:58</publishTime>
+    </File>
+    <File Include="LogView.aspx">
+      <publishTime>05/17/2016 18:59:46</publishTime>
+    </File>
+    <File Include="Scripts/jquery-1.10.2.min.js">
+      <publishTime>04/07/2016 23:13:23</publishTime>
+    </File>
+    <File Include="Service/AndroidService.ashx">
+      <publishTime>04/07/2016 23:13:23</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>02/25/2017 15:48:56</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

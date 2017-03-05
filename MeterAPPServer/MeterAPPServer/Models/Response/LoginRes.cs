@@ -12,7 +12,9 @@ namespace TestAndroid.Models.Response
         public string USERNAME { get; set; }
         public int MeterDateTimeBegin { get; set; }
         public int MeterDateTimeEnd { get; set; }
-
+        public string departmentId { get; set; }
+        public string departmentName { get; set; }
+        public string telePhoneNo { get; set; }
 
     }
 }

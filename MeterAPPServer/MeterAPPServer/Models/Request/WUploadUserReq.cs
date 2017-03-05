@@ -74,5 +74,22 @@ namespace TestAndroid.Models.Request
         public string Phone { get; set; }//电话
         public string Memo1 { get; set; }//备注
 
+        public double totalNumberFirst { get; set; }
+        public double avePriceFirst { get; set; }
+
+        public double waterTotalChargeFirst { get; set; }
+
+        public double totalNumberSecond { get; set; }
+
+        public double avePriceSecond { get; set; }
+
+        public double waterTotalChargeSecond { get; set; }
+
+        public double totalNumberThird { get; set; }
+
+        public double avePriceThird { get; set; }
+
+        public double waterTotalChargeThird { get; set; }
+
     }
 }

@@ -117,5 +117,22 @@ namespace TestAndroid.Models.Entity
         public string PriceTypeName { get; set; }//用户类型名称
 
         public string Memo1 { get; set; }
+
+        public double totalNumberFirst { get; set; }
+        public double avePriceFirst { get; set; }
+
+        public double waterTotalChargeFirst { get; set; }
+
+        public double totalNumberSecond { get; set; }
+
+        public double avePriceSecond { get; set; }
+
+        public double waterTotalChargeSecond { get; set; }
+
+        public double totalNumberThird { get; set; }
+
+        public double avePriceThird { get; set; }
+
+        public double waterTotalChargeThird { get; set; }
     }
 }

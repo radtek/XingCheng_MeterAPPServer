@@ -80,6 +80,7 @@
     <Compile Include="LogView.aspx.designer.cs">
       <DependentUpon>LogView.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Models\Entity\FeeInfo.cs" />
     <Compile Include="Models\Entity\QianFeiHistoryItem.cs" />
     <Compile Include="Models\Entity\QianFeiItem.cs" />
     <Compile Include="Models\Request\MeterPriceReq.cs" />

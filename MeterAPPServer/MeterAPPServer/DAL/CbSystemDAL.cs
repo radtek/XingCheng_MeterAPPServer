@@ -105,7 +105,7 @@ namespace TestAndroid.DAL
         {
             using (var context = WDbContext())
             {
-                string strSql = "SELECT LOGINID,USERNAME,MeterDateTimeBegin,MeterDateTimeEnd FROM V_LOGIN  where userstate=1 AND LOGINNAME=@account and LOGINPASSWORD=@pwd";
+                string strSql = "SELECT LOGINID,USERNAME,departmentId,departmentName,isnull(telePhoneNo,'')as telePhoneNo,MeterDateTimeBegin,MeterDateTimeEnd FROM V_LOGIN  where userstate=1 AND LOGINNAME=@account and LOGINPASSWORD=@pwd";
                 var retItem = context.Sql(strSql)
                     .Parameter("account", req.LOGINNAME)
                     .Parameter("pwd", req.LOGINPASSWORD)
@@ -226,7 +226,16 @@ namespace TestAndroid.DAL
                                 waterusertypename as PriceTypeName,
                                 WATERMETERNUMBERCHANGESTATE,
                                 waterUserchargeType,
-                                Memo1
+                                Memo1,
+                                totalNumberFirst
+                                ,avePriceFirst
+                                ,waterTotalChargeFirst
+                                ,totalNumberSecond
+                                ,avePriceSecond
+                                ,waterTotalChargeSecond
+                                ,totalNumberThird
+                                ,avePriceThird
+                                ,waterTotalChargeThird
                                  FROM readMeterRecord WHERE loginId=@loginid
                                 AND 
                                 WATERMETERNUMBERCHANGESTATE=0
@@ -535,7 +544,15 @@ namespace TestAndroid.DAL
                         sbsql.AppendFormat("totalCharge={0},", req.totalCharge);
                         sbsql.AppendFormat("OVERDUEMONEY={0},", req.OVERDUEMONEY);
                         sbsql.AppendFormat("readMeterRecordDate='{0}',", string.IsNullOrEmpty(req.readMeterRecordDate) ? DateTime.Now.ToString() : req.readMeterRecordDate);
-
+                        sbsql.AppendFormat(" totalNumberFirst={0},",req.totalNumberFirst);
+                        sbsql.AppendFormat(" avePriceFirst={0},", req.avePriceFirst);
+                        sbsql.AppendFormat(" waterTotalChargeFirst={0},", req.waterTotalChargeFirst);
+                        sbsql.AppendFormat(" totalNumberSecond={0},", req.totalNumberSecond);
+                        sbsql.AppendFormat(" avePriceSecond={0},", req.avePriceSecond);
+                        sbsql.AppendFormat(" waterTotalChargeSecond={0},", req.waterTotalChargeSecond);
+                        sbsql.AppendFormat(" totalNumberThird={0},", req.totalNumberThird);
+                        sbsql.AppendFormat(" avePriceThird={0},", req.avePriceThird);
+                        sbsql.AppendFormat(" waterTotalChargeThird={0},", req.waterTotalChargeThird);
                         IsSF = (readItem.NoteNo.Substring(0, 1).ToUpper().Equals("A")) ? true : false;
 
                         //抄表员收费
@@ -1167,6 +1184,74 @@ namespace TestAndroid.DAL
             retList.Add(decimal.Parse(strComputeTrape[2]));
             return retList;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="decUsedTotalNum"></param>
+        /// <param name="decTotalNumber"></param>
+        /// <param name="strTrapePriceString"></param>
+        /// <returns></returns>
+        public string[] GetAllAvePrice(decimal decUsedTotalNum, decimal decTotalNumber, string strTrapePriceString)
+        {
+            string[] strComputeTrape = new string[12];//0:平均单价 1:水费小计计算过程 2:水费小计 3-11:三级阶梯单价3 6 9/水量4 7 10/金额5 8 11
+            //string strTrapePriceString="0-32:1.52|32-50:2.3|50-80:3.5|80-100:4.5|100-120:6";
+
+            for (int j = 3; j < strComputeTrape.Length; j++)
+                strComputeTrape[j] = "0";
+
+            string[] strTrapePrice = strTrapePriceString.Split('|');
+            decimal decWaterSum = 0, decWaterTotalNumber = decTotalNumber;
+            decTotalNumber = decTotalNumber + decUsedTotalNum;
+            for (int i = strTrapePrice.Length - 1; i >= 0; i--)
+            {
+                string[] strJTAndPrice = strTrapePrice[i].Split(':');
+                string[] strJT = strJTAndPrice[0].Split('-');
+                if (IsNumeric(strJT[0]) && IsNumeric(strJT[1]))
+                {
+                    if (decTotalNumber > Convert.ToDecimal(strJT[0]) && decTotalNumber <= Convert.ToDecimal(strJT[1]))
+                    {
+                        if (decUsedTotalNum >= Convert.ToDecimal(strJT[0]))
+                        {
+                            strComputeTrape[3 + i * 3] = strJTAndPrice[1];
+                            strComputeTrape[4 + i * 3] = (decTotalNumber - decUsedTotalNum).ToString();
+                            strComputeTrape[5 + i * 3] = ((decTotalNumber - decUsedTotalNum) * (Convert.ToDecimal(strJTAndPrice[1]))).ToString();
+                            decWaterSum += (decTotalNumber - decUsedTotalNum) * (Convert.ToDecimal(strJTAndPrice[1]));
+                            if (strComputeTrape[1] != null)
+                                strComputeTrape[1] += "+(" + decTotalNumber.ToString() + "-" + decUsedTotalNum.ToString() + ")*" + strJTAndPrice[1];
+                            else
+                                strComputeTrape[1] += "计算过程:(" + decTotalNumber.ToString() + "-" + decUsedTotalNum.ToString() + ")*" + strJTAndPrice[1];
+                            break;
+                        }
+                        else
+                        {
+                            strComputeTrape[3 + i * 3] = strJTAndPrice[1];
+                            strComputeTrape[4 + i * 3] = (decTotalNumber - Convert.ToDecimal(strJT[0])).ToString();
+                            strComputeTrape[5 + i * 3] = ((decTotalNumber - Convert.ToDecimal(strJT[0])) * (Convert.ToDecimal(strJTAndPrice[1]))).ToString();
+                            decWaterSum += (decTotalNumber - Convert.ToDecimal(strJT[0])) * (Convert.ToDecimal(strJTAndPrice[1]));
+                            if (strComputeTrape[1] != null)
+                                strComputeTrape[1] += "+(" + decTotalNumber.ToString() + "-" + strJT[0] + ")*" + strJTAndPrice[1];
+                            else
+                                strComputeTrape[1] += "计算过程:(" + decTotalNumber.ToString() + "-" + strJT[0] + ")*" + strJTAndPrice[1];
+                        }
+
+                        decTotalNumber = Convert.ToDecimal(strJT[0]);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+            }
+            if (decWaterTotalNumber > 0)
+                strComputeTrape[0] = (decWaterSum / decWaterTotalNumber).ToString("f3");
+            else
+                strComputeTrape[0] = "0";
+            strComputeTrape[1] += "=" + decWaterSum.ToString() + "÷" + decWaterTotalNumber.ToString() + "=" + strComputeTrape[0];
+            strComputeTrape[2] = decWaterSum.ToString("F2");
+            return strComputeTrape;
+        }
+
 
         private bool IsNumeric(string testStr)
         {

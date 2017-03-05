@@ -10,6 +10,7 @@ using TestAndroid.Models.Response;
 using TestAndroid.DAL;
 using MeterAPPServer.Models.Response;
 using MeterAPPServer.Models.Request;
+using MeterAPPServer.Models.Entity;
 namespace TestAndroid.BLL
 {
     public class AndroidOperateService
@@ -286,10 +287,45 @@ namespace TestAndroid.BLL
             }
             var TrapePrice = cbDal.GetTrapePriceString(req.readMeterRecordId);
             var totleCount = cbDal.getTotleCount(req.waterUserId);
-            var arrData = cbDal.GetAvePrice(totleCount, req.currData, TrapePrice);
-            res.TotleFee = arrData[1];
-            res.avgPrice = arrData[0];
+            var arrData = cbDal.GetAllAvePrice(totleCount, req.currData, TrapePrice); //cbDal.GetAvePrice(totleCount, req.currData, TrapePrice);
+            if (arrData == null || arrData.Length != 12)
+            {
+                return res;
+            }
+            res.calcProc = arrData[1];
+            res.TotleFee =toDecimal(arrData[2],0);
+            res.avgPrice =toDecimal(arrData[0],0);
+
+            res.step1 = new FeeInfo()
+            {
+                avgPrice = toDecimal(arrData[3], 0),
+                fee = toDecimal(arrData[5], 0),
+                waterNum = toDecimal(arrData[4], 0)
+            };
+            res.step2 = new FeeInfo()
+            {
+                avgPrice = toDecimal(arrData[6], 0),
+                fee = toDecimal(arrData[8], 0),
+                waterNum = toDecimal(arrData[7], 0)
+            };
+            res.step3 = new FeeInfo()
+            {
+                avgPrice = toDecimal(arrData[9], 0),
+                fee = toDecimal(arrData[11], 0),
+                waterNum = toDecimal(arrData[10], 0)
+            };
             return res;
+        }
+
+
+        public static decimal toDecimal(string str,decimal defaultValue)
+        {
+            var retVal = 0m;
+            if (decimal.TryParse(str, out retVal))
+            {
+                return retVal;
+            }
+            return defaultValue;
         }
     }
 }

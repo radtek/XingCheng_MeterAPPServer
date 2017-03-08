@@ -693,10 +693,10 @@ namespace TestAndroid.DAL
                 sbsql.Append("DECLARE @LoginID varchar(10)\n");
                 sbsql.Append("Declare @YearMonth varchar(7) \n");
                 sbsql.Append("SELECT @readMeterRecordYear=datepart(year,readMeterRecordYearAndMonth),@YearMonth=convert(varchar(7),readMeterRecordYearAndMonth,120),@readMeterRecordMonth=datepart(month,readMeterRecordYearAndMonth),@LoginID=loginId FROM readMeterRecord WHERE readMeterRecordId=@readMeterRecordId\n");
-                sbsql.Append("SELECT @waterUserNO=waterUserNO,@meterReadingNO=meterReadingId FROM readMeterRecord where isSummaryMeter=2 and convert(vaarchar(7),[readMeterRecordYearAndMonth],120)=@YearMonth  AND readMeterRecordId=@readMeterRecordId\n");
-                sbsql.Append("and waterUserNO in (select waterUserNO from readMeterRecord where isSummaryMeter=2 and convert(vaarchar(7),[readMeterRecordYearAndMonth],120)=@YearMonth group by waterUserNO having COUNT(*)>1)\n");
-                sbsql.Append("SELECT @MeterCount=COUNT(1) FROM readMeterRecord WHERE isSummaryMeter=2 and convert(vaarchar(7),[readMeterRecordYearAndMonth],120)=@YearMonth AND waterUserNO=@waterUserNO\n");
-                sbsql.Append("SELECT @SummaryCount=COUNT(1) FROM readMeterRecord WHERE  waterMeterParentId=@waterUserNO and convert(vaarchar(7),[readMeterRecordYearAndMonth],120)=@YearMonth \n");
+                sbsql.Append("SELECT @waterUserNO=waterUserNO,@meterReadingNO=meterReadingId FROM readMeterRecord where isSummaryMeter=2 and convert(varchar(7),[readMeterRecordYearAndMonth],120)=@YearMonth  AND readMeterRecordId=@readMeterRecordId\n");
+                sbsql.Append("and waterUserNO in (select waterUserNO from readMeterRecord where isSummaryMeter=2 and convert(varchar(7),[readMeterRecordYearAndMonth],120)=@YearMonth group by waterUserNO having COUNT(*)>1)\n");
+                sbsql.Append("SELECT @MeterCount=COUNT(1) FROM readMeterRecord WHERE isSummaryMeter=2 and convert(varchar(7),[readMeterRecordYearAndMonth],120)=@YearMonth AND waterUserNO=@waterUserNO\n");
+                sbsql.Append("SELECT @SummaryCount=COUNT(1) FROM readMeterRecord WHERE  waterMeterParentId=@waterUserNO and convert(varchar(7),[readMeterRecordYearAndMonth],120)=@YearMonth \n");
                 sbsql.Append("SELECT @LoginID AS LoginID,@MeterCount AS MeterCount,@readMeterRecordYear AS ReadMeterRecordYear,@readMeterRecordMonth AS ReadMeterRecordMonth,@waterUserNO AS WaterUserNO,@SummaryCount AS SummaryCount\n");
 
                 var retItem = context.Sql(sbsql.ToString()).QuerySingle<WaterMeterArguments>();
@@ -847,7 +847,7 @@ namespace TestAndroid.DAL
                 sbsql.AppendFormat("DECLARE @readMeterRecordMonth int\n");
                 sbsql.AppendFormat("DECLARE @MainreadMeterRecordId varchar(50)\n");
                 sbsql.AppendFormat("DECLARE @MeterCount int=0\n");
-                sbsql.AppendFormat("delcare @yearmonth varchar(7)\n");
+                sbsql.AppendFormat("declare @yearmonth varchar(7)\n");
                 sbsql.AppendFormat("SELECT @readMeterRecordYear=readMeterRecordYear,@yearmonth=convert(varchar(7),readMeterRecordYearAndMonth,120),@readMeterRecordMonth=readMeterRecordMonth FROM readMeterRecord WHERE readMeterRecordId=@readMeterRecordId\n");
                 sbsql.AppendFormat("SELECT @waterMeterParentId=waterMeterParentId FROM readMeterRecord WHERE readMeterRecordId=@readMeterRecordId\n");
                 sbsql.AppendFormat("SELECT @MeterCount=COUNT(1) FROM readMeterRecord WHERE isSummaryMeter=2 and convert(varchar(7),readMeterRecordYearAndMonth,120)=@yearmonth AND waterUserNO=@waterMeterParentId\n");
@@ -1114,6 +1114,42 @@ namespace TestAndroid.DAL
                 return res;
             }
         }
+
+        public BaseRes UpdateInvoiceInfo(InvoiceReq req)
+        {
+            BaseRes res = new BaseRes();
+            if (req == null|string.IsNullOrWhiteSpace(req.invoiceNo)||string.IsNullOrWhiteSpace(req.readMeterId))
+            {
+                res.errMsg = "参数错误";
+                res.errMsgNo = -1;
+                return res;
+            }
+            res.errMsg = "";
+            res.errMsgNo = 0;
+            using (var context = WDbContext())
+            {
+                string strSql = @"declare @chargeId nvarchar(50)=''
+                                select @chargeId=mr.chargeID from readMeterRecord mr with(nolock)
+                                where mr.readMeterRecordId=@reacordId
+                                if(@chargeId is not null and @chargeId<>'')
+                                begin
+                                  if not exists(select 1 from CHARGEINVOICEPRINT cp with(nolock) where cp.CHARGEID=@chargeId)
+                                  begin
+                                      insert into CHARGEINVOICEPRINT(CHARGEINVOICEPRINTID,CHARGEID,INVOICENO,INVOICEPRINTDATETIME,INVOICEPRINTWORKERID,INVOICEPRINTWORKERNAME,readMeterRecordYearAndMonth,
+	                                  waterUserName,waterMeterNo,waterUserAddress,waterMeterTypeId,waterMeterTypeName,waterMeterLastNumber,waterMeterEndNumber,totalNumber,waterTotalCharge,extraCharge1,extraCharge2,totalCharge)
+	                                  select @chargeId,@chargeId,@invoiceNo,getdate(),rm.loginId,rm.USERNAME,rm.lastNumberYearMonth,rm.waterUserName,rm.waterUserNO,rm.waterUserAddress,
+	                                  rm.waterMeterTypeId,rm.waterMeterTypeName,rm.waterMeterLastNumber,rm.waterMeterEndNumber,rm.totalNumber,rm.waterTotalCharge,rm.extraCharge1,rm.extraCharge2,rm.totalCharge
+	                                  from readMeterRecord rm where rm.chargeID=@chargeId
+                                  end
+                                end";
+                context.Sql(strSql)
+                    .Parameter("reacordId", req.readMeterId)
+                    .Parameter("invoiceNo", req.invoiceNo)
+                    .Execute();
+            }
+            return res;
+        }
+
         public LoginRes getAllowUpdateDate(WBBReq req)
         {
             using (var context = WDbContext())

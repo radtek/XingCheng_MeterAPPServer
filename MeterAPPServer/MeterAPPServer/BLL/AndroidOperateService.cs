@@ -263,6 +263,11 @@ namespace TestAndroid.BLL
             return res;
         }
 
+        public BaseRes UpdateInvoiceNo(InvoiceReq req)
+        {
+            return cbDal.UpdateInvoiceInfo(req);
+        }
+
         public WUploadUserRes GetSingleFeeItemRes(WSingleUserItemReq req)
         {
             var res = new WUploadUserRes();

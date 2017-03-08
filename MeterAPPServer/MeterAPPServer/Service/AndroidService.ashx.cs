@@ -121,6 +121,10 @@ namespace TestAndroid.Service
                         var waterPriceItem = JsonTool.Deserialize<MeterPriceReq>(gson);
                         res = JsonTool.Serialize<MeterPriceRes>(AService.CalcTotleFee(waterPriceItem));
                         break;
+                    case "21"://上传发票编号
+                        var invoicReq = JsonTool.Deserialize<InvoiceReq>(gson);
+                        res = JsonTool.Serialize<BaseRes>(AService.UpdateInvoiceNo(invoicReq));
+                        break;
                     default:
                         break;
                 }

@@ -83,6 +83,7 @@
     <Compile Include="Models\Entity\FeeInfo.cs" />
     <Compile Include="Models\Entity\QianFeiHistoryItem.cs" />
     <Compile Include="Models\Entity\QianFeiItem.cs" />
+    <Compile Include="Models\Request\InvoiceReq.cs" />
     <Compile Include="Models\Request\MeterPriceReq.cs" />
     <Compile Include="Models\Request\QianFeiItemReq.cs" />
     <Compile Include="Models\Request\WSingleUserItemReq.cs" />

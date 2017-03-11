@@ -15,6 +15,7 @@ namespace TestAndroid.Models.Response
         public string departmentId { get; set; }
         public string departmentName { get; set; }
         public string telePhoneNo { get; set; }
+        public int IsPrinter { get; set; }
 
     }
 }

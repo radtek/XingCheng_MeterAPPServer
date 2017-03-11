@@ -26,6 +26,7 @@ namespace TestAndroid.BLL
         public static string Serialize<T>(T Input)
         {
             JavaScriptSerializer Serializer = new JavaScriptSerializer();
+            Serializer.MaxJsonLength = int.MaxValue;
             string retVal=Serializer.Serialize(Input);
             return retVal;
         }

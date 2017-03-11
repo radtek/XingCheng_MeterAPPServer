@@ -123,11 +123,11 @@ namespace TestAndroid.Models.Entity
 
         public double waterTotalChargeFirst { get; set; }
 
-        public double totalNumberSecond { get; set; }
+        public double totalNumberSencond { get; set; }
 
-        public double avePriceSecond { get; set; }
+        public double avePriceSencond { get; set; }
 
-        public double waterTotalChargeSecond { get; set; }
+        public double waterTotalChargeSencond { get; set; }
 
         public double totalNumberThird { get; set; }
 

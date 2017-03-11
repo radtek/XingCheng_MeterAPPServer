@@ -105,7 +105,7 @@ namespace TestAndroid.DAL
         {
             using (var context = WDbContext())
             {
-                string strSql = "SELECT LOGINID,USERNAME,departmentId,departmentName,isnull(telePhoneNo,'')as telePhoneNo,MeterDateTimeBegin,MeterDateTimeEnd FROM V_LOGIN  where userstate=1 AND LOGINNAME=@account and LOGINPASSWORD=@pwd";
+                string strSql = "SELECT LOGINID,USERNAME,departmentId,departmentName,isnull(telePhoneNo,'')as telePhoneNo,MeterDateTimeBegin,MeterDateTimeEnd,IsPrinter FROM V_LOGIN  where userstate=1 AND LOGINNAME=@account and LOGINPASSWORD=@pwd";
                 var retItem = context.Sql(strSql)
                     .Parameter("account", req.LOGINNAME)
                     .Parameter("pwd", req.LOGINPASSWORD)
@@ -230,9 +230,9 @@ namespace TestAndroid.DAL
                                 totalNumberFirst
                                 ,avePriceFirst
                                 ,waterTotalChargeFirst
-                                ,totalNumberSecond
-                                ,avePriceSecond
-                                ,waterTotalChargeSecond
+                                ,totalNumberSencond
+                                ,avePriceSencond
+                                ,waterTotalChargeSencond
                                 ,totalNumberThird
                                 ,avePriceThird
                                 ,waterTotalChargeThird
@@ -547,9 +547,9 @@ namespace TestAndroid.DAL
                         sbsql.AppendFormat(" totalNumberFirst={0},",req.totalNumberFirst);
                         sbsql.AppendFormat(" avePriceFirst={0},", req.avePriceFirst);
                         sbsql.AppendFormat(" waterTotalChargeFirst={0},", req.waterTotalChargeFirst);
-                        sbsql.AppendFormat(" totalNumberSecond={0},", req.totalNumberSecond);
-                        sbsql.AppendFormat(" avePriceSecond={0},", req.avePriceSecond);
-                        sbsql.AppendFormat(" waterTotalChargeSecond={0},", req.waterTotalChargeSecond);
+                        sbsql.AppendFormat(" totalNumberSencond={0},", req.totalNumberSencond);
+                        sbsql.AppendFormat(" avePriceSencond={0},", req.avePriceSencond);
+                        sbsql.AppendFormat(" waterTotalChargeSencond={0},", req.waterTotalChargeSencond);
                         sbsql.AppendFormat(" totalNumberThird={0},", req.totalNumberThird);
                         sbsql.AppendFormat(" avePriceThird={0},", req.avePriceThird);
                         sbsql.AppendFormat(" waterTotalChargeThird={0},", req.waterTotalChargeThird);

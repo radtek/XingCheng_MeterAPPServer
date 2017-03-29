@@ -769,6 +769,11 @@ namespace TestAndroid.DAL
 
                 context.Sql(sql.ToString()).Execute();
 
+                string sqlDep = " UPDATE WATERFEECHARGE SET DepartmentID = V.departmentID, DepartmentName = V.departmentName FROM WATERFEECHARGE W, V_LOGIN V WHERE W.CHARGEWORKERID=V.loginId AND CHARGEID=@CHARGEID";
+                context.Sql(sqlDep)
+                    .Parameter("chargeID", chargeID)
+                    .Execute();
+
             }
 
         }
@@ -779,24 +784,17 @@ namespace TestAndroid.DAL
             string CHARGEWORKERNAME, CHARGERID;
 
             WaterChargeUserRes WCU = new WaterChargeUserRes();
-            if (chargeItem.PriceType.Equals("0006"))
+
+            WCU = GetChargeIDByMeterNo(chargeItem.NoteNo);
+            if (WCU != null)
             {
-                CHARGERID = "0024";
-                CHARGEWORKERNAME = "公厕收费员";
+                CHARGERID = WCU.CHARGERID;
+                CHARGEWORKERNAME = WCU.CHARGEWORKERNAME;
             }
             else
             {
-                WCU = GetChargeIDByMeterNo(chargeItem.NoteNo);
-                if (WCU != null)
-                {
-                    CHARGERID = WCU.CHARGERID;
-                    CHARGEWORKERNAME = WCU.CHARGEWORKERNAME;
-                }
-                else
-                {
-                    CHARGERID = chargeItem.loginId;
-                    CHARGEWORKERNAME = chargeItem.USERNAME;
-                }
+                CHARGERID = chargeItem.loginId;
+                CHARGEWORKERNAME = chargeItem.USERNAME;
             }
 
             string chargeID = GetNewChargeID(readItem.LoginID);
@@ -829,6 +827,11 @@ namespace TestAndroid.DAL
                     .Parameter("chargeID", chargeID)
                     .Parameter("readMeterRecordId", readItem.readMeterRecordId)
                     .Parameter("checkDateTime", DateTime.Now.ToString())
+                    .Execute();
+                // UPDATE WATERFEECHARGE SET DepartmentID = V.departmentID, DepartmentName = V.departmentName FROM WATERFEECHARGE W, V_LOGIN V WHERE W.CHARGEWORKERID=V.loginId AND CHARGEID=''
+                string sqlDep=" UPDATE WATERFEECHARGE SET DepartmentID = V.departmentID, DepartmentName = V.departmentName FROM WATERFEECHARGE W, V_LOGIN V WHERE W.CHARGEWORKERID=V.loginId AND CHARGEID=@CHARGEID";
+                context.Sql(sqlDep)
+                    .Parameter("chargeID", chargeID)
                     .Execute();
 
                 //判断是不是两块总表的分表，如果是需要修改总表的费用，找出总表的readMeterRecordId,重新执行InsertChargeFeeInfo(string readMeterRecordId)

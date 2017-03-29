@@ -63,7 +63,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="Login.aspx" />
     <Content Include="LogView.aspx" />
+    <Content Include="Main.aspx" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -73,12 +75,24 @@
     <Compile Include="BLL\SimpleLog.cs" />
     <Compile Include="DAL\BaseDAL.cs" />
     <Compile Include="DAL\CbSystemDAL.cs" />
+    <Compile Include="Login.aspx.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Login.aspx.designer.cs">
+      <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
     <Compile Include="LogView.aspx.cs">
       <DependentUpon>LogView.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="LogView.aspx.designer.cs">
       <DependentUpon>LogView.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Main.aspx.cs">
+      <DependentUpon>Main.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Main.aspx.designer.cs">
+      <DependentUpon>Main.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\Entity\FeeInfo.cs" />
     <Compile Include="Models\Entity\QianFeiHistoryItem.cs" />

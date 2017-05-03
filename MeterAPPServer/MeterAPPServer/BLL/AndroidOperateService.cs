@@ -332,5 +332,18 @@ namespace TestAndroid.BLL
             }
             return defaultValue;
         }
+
+        public WChargeInfoRes GetChargeInfo(WChargeInfoReq req)
+        {
+            var res = new WChargeInfoRes();
+            if (req == null)
+            {
+                res.isErrMsg = true;
+                res.errMsg = "参数传递错误";
+                return res;
+            }
+            res = cbDal.GetChargeInfoItemRes(req);
+            return res;
+        }
     }
 }

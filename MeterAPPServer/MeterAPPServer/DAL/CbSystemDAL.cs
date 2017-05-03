@@ -829,9 +829,24 @@ namespace TestAndroid.DAL
                     .Parameter("checkDateTime", DateTime.Now.ToString())
                     .Execute();
                 // UPDATE WATERFEECHARGE SET DepartmentID = V.departmentID, DepartmentName = V.departmentName FROM WATERFEECHARGE W, V_LOGIN V WHERE W.CHARGEWORKERID=V.loginId AND CHARGEID=''
-                string sqlDep=" UPDATE WATERFEECHARGE SET DepartmentID = V.departmentID, DepartmentName = V.departmentName FROM WATERFEECHARGE W, V_LOGIN V WHERE W.CHARGEWORKERID=V.loginId AND CHARGEID=@CHARGEID";
+
+//                UPDATE WATERFEECHARGE SET DepartmentID = V.departmentID, DepartmentName = V.departmentName 
+//,CHARGEYSQQYE=WU.prestore,CHARGEYSJSYE=WU.prestore
+//FROM WATERFEECHARGE W, V_LOGIN V ,wateruser WU , readMeterRecord R 
+//WHERE W.CHARGEWORKERID=V.loginId AND W.CHARGEID=@CHARGEID AND WU.waterUserId=R.waterUserId AND R.readMeterRecordId=@readMeterRecordId
+
+                //string sqlDep=" UPDATE WATERFEECHARGE SET DepartmentID = V.departmentID, DepartmentName = V.departmentName FROM WATERFEECHARGE W, V_LOGIN V WHERE W.CHARGEWORKERID=V.loginId AND CHARGEID=@CHARGEID";
+                //context.Sql(sqlDep)
+                //    .Parameter("chargeID", chargeID)
+                //    .Execute();
+
+                //2017年5月2日
+                string sqlDep = @" UPDATE WATERFEECHARGE SET DepartmentID = V.departmentID, DepartmentName = V.departmentName ,CHARGEYSQQYE=WU.prestore,CHARGEYSJSYE=WU.prestore
+                                   FROM WATERFEECHARGE W, V_LOGIN V ,wateruser WU , readMeterRecord R 
+                                   WHERE W.CHARGEWORKERID=V.loginId AND W.CHARGEID=@CHARGEID AND WU.waterUserId=R.waterUserId AND R.readMeterRecordId=@readMeterRecordId";
                 context.Sql(sqlDep)
                     .Parameter("chargeID", chargeID)
+                     .Parameter("readMeterRecordId", readItem.readMeterRecordId)
                     .Execute();
 
                 //判断是不是两块总表的分表，如果是需要修改总表的费用，找出总表的readMeterRecordId,重新执行InsertChargeFeeInfo(string readMeterRecordId)
@@ -1471,6 +1486,41 @@ namespace TestAndroid.DAL
 
         #endregion
 
+        public WChargeInfoRes GetChargeInfoItemRes(WChargeInfoReq req)
+        {
+            using (var context = WDbContext())
+            {
+                //判断当天/当月
+//                --当天
+//SELECT COUNT(DISTINCT WATERUSERID) AS 用户数量,SUM(TOTALNUMBERCHARGE) AS 水量合计,SUM(CHARGEBCSS) AS 收费合计 FROM V_WATERFEECHARGE_READMETERRECORD
+//WHERE DATEDIFF(DAY,CHARGEDATETIME,GETDATE())=0 AND CHARGEWORKERID='收费员ID'
+
+//--当月
+//SELECT COUNT(DISTINCT WATERUSERID) AS 用户数量,SUM(TOTALNUMBERCHARGE) AS 水量合计,SUM(CHARGEBCSS) AS 收费合计 FROM V_WATERFEECHARGE_READMETERRECORD
+//WHERE DATEDIFF(MONTH,CHARGEDATETIME,GETDATE())=0 AND CHARGEWORKERID='收费员ID'
+                string strSql = "";
+                if (req.TJType)
+                {
+                    strSql = @"SELECT COUNT(DISTINCT WATERUSERID) AS ChargeCount,SUM(TOTALNUMBERCHARGE) AS ChargeWater,SUM(CHARGEBCSS) AS ChargeFee FROM V_WATERFEECHARGE_READMETERRECORD
+WHERE DATEDIFF(MONTH,CHARGEDATETIME,GETDATE())=0 AND CHARGEWORKERID=@loginId";
+                }
+                else
+                {
+                    strSql = @"SELECT COUNT(DISTINCT WATERUSERID) AS ChargeCount,SUM(TOTALNUMBERCHARGE) AS ChargeWater,SUM(CHARGEBCSS) AS ChargeFee FROM V_WATERFEECHARGE_READMETERRECORD
+WHERE DATEDIFF(DAY,CHARGEDATETIME,GETDATE())=0 AND CHARGEWORKERID=@loginId";
+                }
+
+
+                var retItem = context.Sql(strSql)
+                     .Parameter("loginId", req.loginid)
+                     .QuerySingle<WChargeInfoRes>();
+                    //.QueryMany<ChargeInfoItem>();
+                //WChargeInfoRes res = new WChargeInfoRes();
+                //res.chargeItem = retItem;
+                return retItem;
+            }
+        }
+
         #region //RONG 2016-4-30
 
         public class WaterChargeUserRes : BaseRequest
@@ -1521,5 +1571,7 @@ namespace TestAndroid.DAL
 
         #endregion
 
+
+       
     }
 }

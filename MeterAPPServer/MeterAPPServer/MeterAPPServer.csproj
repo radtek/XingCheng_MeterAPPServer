@@ -87,6 +87,7 @@
     <Compile Include="DAL\CbSystemDAL.cs" />
     <Compile Include="Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
@@ -100,16 +101,19 @@
     </Compile>
     <Compile Include="Main.aspx.cs">
       <DependentUpon>Main.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Main.aspx.designer.cs">
       <DependentUpon>Main.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Models\Entity\ChargeInfoItem.cs" />
     <Compile Include="Models\Entity\FeeInfo.cs" />
     <Compile Include="Models\Entity\QianFeiHistoryItem.cs" />
     <Compile Include="Models\Entity\QianFeiItem.cs" />
     <Compile Include="Models\Request\InvoiceReq.cs" />
     <Compile Include="Models\Request\MeterPriceReq.cs" />
     <Compile Include="Models\Request\QianFeiItemReq.cs" />
+    <Compile Include="Models\Request\WChargeInfoReq.cs" />
     <Compile Include="Models\Request\WSingleUserItemReq.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -154,6 +158,7 @@
     <Compile Include="Models\Response\WaterChargeRes.cs" />
     <Compile Include="Models\Response\WBBRes.cs" />
     <Compile Include="Models\Response\WCBHistoryRes.cs" />
+    <Compile Include="Models\Response\WChargeInfoRes.cs" />
     <Compile Include="Models\Response\WFaultReportRes.cs" />
     <Compile Include="Models\Response\WPointRes.cs" />
     <Compile Include="Models\Response\WPriceRes.cs" />

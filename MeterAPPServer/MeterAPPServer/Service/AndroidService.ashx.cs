@@ -125,6 +125,10 @@ namespace TestAndroid.Service
                         var invoicReq = JsonTool.Deserialize<InvoiceReq>(gson);
                         res = JsonTool.Serialize<BaseRes>(AService.UpdateInvoiceNo(invoicReq));
                         break;
+                    case "22"://获取抄表员收费统计
+                        var chargeinfoReq = JsonTool.Deserialize<WChargeInfoReq>(gson);
+                        res = JsonTool.Serialize<WChargeInfoRes>(AService.GetChargeInfo(chargeinfoReq));
+                        break;
                     default:
                         break;
                 }

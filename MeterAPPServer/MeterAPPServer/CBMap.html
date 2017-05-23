@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>人员定位</title>
+      <style type="text/css">
+        body, html
+        {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+        #allmap
+        {
+            width: 100%;
+            height: 100%;
+        }
+        p
+        {
+            margin-left: 5px;
+            font-size: 14px;
+        }
+    </style>
+<link rel="stylesheet" href="style.css"  type="text/css" media="screen" />
+
+<!-- jQuery file -->
+<script src="js/jquery.min.js" ></script>
+<!-- FlexSlider -->
+<script src="js/jquery.flexslider.js" ></script>
+<!-- Main effects files -->
+<script src="js/effects.js" ></script>
+<!-- Hide Mobiles Browser Navigation Bar -->
+
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=1INvBBeGicBB2OoRU9bPw3jH5IKj11ld"></script>
+
+</head>
+<body>
+ <div id="allmap">
+    </div>
+     <div id="footer" class="black_gradient">
+            <a href="Main.aspx"  class="back_button black_button">返回</a>
+         
+            
+            <div class="clear"></div>
+        </div>
+</body>
+</html>
+
+<script type="text/javascript">
+    // 百度地图API功能
+    var map = new BMap.Map("allmap");
+    map.centerAndZoom(new BMap.Point(119.63785, 41.399079), 15);
+    // 添加带有定位的导航控件
+    var navigationControl = new BMap.NavigationControl({
+        // 靠左上角位置
+        anchor: BMAP_ANCHOR_TOP_LEFT,
+        // LARGE类型
+        type: BMAP_NAVIGATION_CONTROL_LARGE,
+        // 启用显示定位
+        enableGeolocation: true
+    });
+    map.addControl(navigationControl);
+    // 添加定位控件
+    var geolocationControl = new BMap.GeolocationControl();
+    geolocationControl.addEventListener("locationSuccess", function(e) {
+        // 定位成功事件
+        var address = '';
+        address += e.addressComponent.province;
+        address += e.addressComponent.city;
+        address += e.addressComponent.district;
+        address += e.addressComponent.street;
+        address += e.addressComponent.streetNumber;
+    });
+    geolocationControl.addEventListener("locationError", function(e) {
+        // 定位失败事件
+    });
+    map.addControl(geolocationControl);
+
+    function addMarker(point) {
+        var marker = new BMap.Marker(point);
+        map.addOverlay(marker);
+    }
+
+    function ShowAllMarker() {
+
+        var Array = [];
+        var total_num = window.external.getRowsNumber();
+        for (var i = 0; i <= 2 * total_num - 1; i++) {
+            Array.push(window.external.Getpoints(i));
+        }
+
+        var PointArr = [];
+        for (var i = 0; i <= Array.length - 1; i += 2) {//偶数索引存经度，奇数存维度
+            var point = new BMap.Point(Array[i], Array[i + 1]);
+            addMarker(point);
+        }
+        // var polyline = new BMap.Polyline(PointArr, { strokeColor: "blue", strokeWeight: 6, strokeOpacity: 0.5 });  //定义折线
+
+
+        //map.addOverlay(polyline);
+        window.external.ClearRows_num(); //重置窗体计数器
+    }
+    
+    
+</script>
+

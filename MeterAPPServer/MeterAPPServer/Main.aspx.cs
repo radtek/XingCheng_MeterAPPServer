@@ -41,9 +41,14 @@ namespace MeterAPPServer
                 UUserNum = dr["UUserNum"].ToString();
                 UOver = dr["UOver"].ToString();
                // UNever = dr["UNever"].ToString();
-                UNever = (Convert.ToInt32(dr["UTotal"].ToString()) - Convert.ToInt32(dr["UOver"].ToString())).ToString();               
+                int _Utotal = 0;
+                int _UOver = 0;
+                if (int.TryParse(dr["UTotal"].ToString(), out _Utotal) && int.TryParse(dr["UOver"].ToString(), out _UOver))
+                {
+                    UNever = (_Utotal - _UOver).ToString();
+                    Urate = Math.Round(Convert.ToDecimal(_UOver) * 100 / Convert.ToDecimal(_Utotal), 1).ToString();
+                }
                 U0 = dr["U0"].ToString();
-                Urate = Math.Round(Convert.ToDecimal(dr["UOver"].ToString()) * 100 / Convert.ToDecimal(dr["UTotal"].ToString()), 1).ToString();
                 Fwater = dr["Fwater"].ToString();
                 FNum = dr["FNum"].ToString();
                 FFee = dr["FFee"].ToString();

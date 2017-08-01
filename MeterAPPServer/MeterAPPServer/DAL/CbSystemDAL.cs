@@ -247,7 +247,7 @@ namespace TestAndroid.DAL
                 var userItems = context.Sql(strSql)
                                    .Parameter("loginid", req.loginid)
                                    .Parameter("cbYear", req.cbYear)
-                                   .Parameter("currMonth",req.cbYear+"-"+req.cbMonth.ToString().PadLeft(2,'0'))
+                                   .Parameter("currMonth", req.cbYear + "-" + req.cbMonth.ToString().PadLeft(2, '0'))
                                    .Parameter("meterReadingNO", req.meterReadingNO)
                                    .QueryMany<WUserItem>();
 
@@ -384,7 +384,7 @@ namespace TestAndroid.DAL
                                 ORDER BY ordernumber ASC";
 
                 var userItem = context.Sql(strSql)
-                                   .Parameter("yearmonth", req.CbYear+"-"+req.CbMonth.ToString().PadLeft(2,'0'))
+                                   .Parameter("yearmonth", req.CbYear + "-" + req.CbMonth.ToString().PadLeft(2, '0'))
                                    .Parameter("stealNo", req.StealNo)
                                    .QuerySingle<WUserItem>();
                 retItem.UserItem = userItem;
@@ -479,28 +479,28 @@ namespace TestAndroid.DAL
                     IsChaoBiao = true;
                 }
             }
-            if (req.Phone!=null)
+            if (req.Phone != null)
             {
                 if (!req.Phone.Equals(readItem.Phone))
                 {
                     OrPhoneTag = true;
                 }
             }
-            if (req.Memo1!=null)
+            if (req.Memo1 != null)
             {
                 if (!req.Memo1.Equals(readItem.Memo1))
                 {
                     OrMemoTag = true;
                 }
             }
-            if (req.Longitude!=null)
+            if (req.Longitude != null)
             {
                 if (!req.Longitude.Equals("0.0"))
                 {
                     OrGpsTag = true;
                 }
             }
-            
+
             //bool editPhone = false;
             // bool editGps = false;
             #endregion
@@ -530,7 +530,7 @@ namespace TestAndroid.DAL
                 if (IsAllowUpdata && !ClientChargeState.Equals("0"))
                 {
                     //IsEdit = true;
-                    if (readItem.ChaoBiaoTag.Equals("0") && (req.avePrice != 0))
+                    if (readItem.ChaoBiaoTag.Equals("0"))
                     {
                         sbsql.AppendFormat("waterMeterEndNumber={0},", req.waterMeterEndNumber);
                         sbsql.AppendFormat("totalNumber={0},", req.totalNumber);
@@ -544,7 +544,7 @@ namespace TestAndroid.DAL
                         sbsql.AppendFormat("totalCharge={0},", req.totalCharge);
                         sbsql.AppendFormat("OVERDUEMONEY={0},", req.OVERDUEMONEY);
                         sbsql.AppendFormat("readMeterRecordDate='{0}',", string.IsNullOrEmpty(req.readMeterRecordDate) ? DateTime.Now.ToString() : req.readMeterRecordDate);
-                        sbsql.AppendFormat(" totalNumberFirst={0},",req.totalNumberFirst);
+                        sbsql.AppendFormat(" totalNumberFirst={0},", req.totalNumberFirst);
                         sbsql.AppendFormat(" avePriceFirst={0},", req.avePriceFirst);
                         sbsql.AppendFormat(" waterTotalChargeFirst={0},", req.waterTotalChargeFirst);
                         sbsql.AppendFormat(" totalNumberSencond={0},", req.totalNumberSencond);
@@ -614,11 +614,11 @@ namespace TestAndroid.DAL
                 }
                 if (IsChaoBiao || OrGpsTag || OrPhoneTag || OrMemoTag)
                 {
-                    string SqlTemp=sbsql.ToString().TrimEnd(',');
+                    string SqlTemp = sbsql.ToString().TrimEnd(',');
                     sbsql.Clear();
                     sbsql.Append(SqlTemp);
                     sbsql.Append(" WHERE readMeterRecordId=@readMeterRecordId ");
-                   // sbsql.Append("AND chargeState IN (0,1)");
+                    // sbsql.Append("AND chargeState IN (0,1)");
                     context.Sql(sbsql.ToString())
                        .Parameter("readMeterRecordId", req.readMeterRecordId)
                        .Execute();
@@ -830,10 +830,10 @@ namespace TestAndroid.DAL
                     .Execute();
                 // UPDATE WATERFEECHARGE SET DepartmentID = V.departmentID, DepartmentName = V.departmentName FROM WATERFEECHARGE W, V_LOGIN V WHERE W.CHARGEWORKERID=V.loginId AND CHARGEID=''
 
-//                UPDATE WATERFEECHARGE SET DepartmentID = V.departmentID, DepartmentName = V.departmentName 
-//,CHARGEYSQQYE=WU.prestore,CHARGEYSJSYE=WU.prestore
-//FROM WATERFEECHARGE W, V_LOGIN V ,wateruser WU , readMeterRecord R 
-//WHERE W.CHARGEWORKERID=V.loginId AND W.CHARGEID=@CHARGEID AND WU.waterUserId=R.waterUserId AND R.readMeterRecordId=@readMeterRecordId
+                //                UPDATE WATERFEECHARGE SET DepartmentID = V.departmentID, DepartmentName = V.departmentName 
+                //,CHARGEYSQQYE=WU.prestore,CHARGEYSJSYE=WU.prestore
+                //FROM WATERFEECHARGE W, V_LOGIN V ,wateruser WU , readMeterRecord R 
+                //WHERE W.CHARGEWORKERID=V.loginId AND W.CHARGEID=@CHARGEID AND WU.waterUserId=R.waterUserId AND R.readMeterRecordId=@readMeterRecordId
 
                 //string sqlDep=" UPDATE WATERFEECHARGE SET DepartmentID = V.departmentID, DepartmentName = V.departmentName FROM WATERFEECHARGE W, V_LOGIN V WHERE W.CHARGEWORKERID=V.loginId AND CHARGEID=@CHARGEID";
                 //context.Sql(sqlDep)
@@ -1136,7 +1136,7 @@ namespace TestAndroid.DAL
         public BaseRes UpdateInvoiceInfo(InvoiceReq req)
         {
             BaseRes res = new BaseRes();
-            if (req == null|string.IsNullOrWhiteSpace(req.invoiceNo)||string.IsNullOrWhiteSpace(req.readMeterId))
+            if (req == null | string.IsNullOrWhiteSpace(req.invoiceNo) || string.IsNullOrWhiteSpace(req.readMeterId))
             {
                 res.errMsg = "参数错误";
                 res.errMsgNo = -1;
@@ -1320,19 +1320,68 @@ namespace TestAndroid.DAL
             }
             return false;
         }
+
+        #region 计算历史用水
+        //                    decimal decUsedTotalNumber = 0;
+        //                    DateTime dtMeterRecordYearAndMonth = DateAndTime.Now;
+
+        //                    object objYearAndMonth = dgWaterList.Rows[e.RowIndex].Cells["readMeterRecordYearAndMonth"].Value;
+        //                    if (Information.IsDate(objYearAndMonth))
+        //                        dtMeterRecordYearAndMonth = Convert.ToDateTime(objYearAndMonth);
+
+        //                    object objWaterUserID = dgWaterList.Rows[e.RowIndex].Cells["waterUserId"].Value;
+        //                    if (objWaterUserID != null && objWaterUserID != DBNull.Value)
+        //                    {
+        //                        string strGetUsedTotalNumber = "";
+        //                        if (dtMeterRecordYearAndMonth.Month >= 7)
+        //                            strGetUsedTotalNumber = "SELECT SUM(TOTALNUMBER) AS TOTALNUMBER FROM readMeterRecord " +
+        //                                "WHERE readMeterRecordYearAndMonth BETWEEN '" + dtMeterRecordYearAndMonth.Year.ToString() + "-07-01 00:00:00' " +
+        //"AND '" + dtMeterRecordYearAndMonth.AddYears(1).Year.ToString() + "-06-30 23:59:59'  AND checkState='1' AND chargeState<>'0' " +
+        //                                "AND waterUserId='" + objWaterUserID.ToString() + "'";
+        //                        else
+        //                            strGetUsedTotalNumber = "SELECT SUM(TOTALNUMBER) AS TOTALNUMBER FROM readMeterRecord " +
+        //                                "WHERE readMeterRecordYearAndMonth BETWEEN '" + dtMeterRecordYearAndMonth.AddYears(-1).Year.ToString() + "-07-01 00:00:00' " +
+        //    "AND '" + dtMeterRecordYearAndMonth.Year.ToString() + "-06-30 23:59:59'  AND checkState='1' AND chargeState<>'0' " +
+        //                                "AND waterUserId='" + objWaterUserID.ToString() + "'";
+        //                        DataTable dtUsedTotalNum = BLLwaterUser.QuerySQL(strGetUsedTotalNumber);
+        //                        if (dtUsedTotalNum.Rows.Count > 0)
+        //                        {
+        //                            object objUsedTotalNum = dtUsedTotalNum.Rows[0]["TOTALNUMBER"];
+        //                            if (Information.IsNumeric(objUsedTotalNum))
+        //                                decUsedTotalNumber = Convert.ToDecimal(objUsedTotalNum);
+        //                        }
+        //                    }
+        #endregion
+
         public decimal getTotleCount(string waterUserId)
         {
             decimal decUsedTotalNumber = 0;
             string strMeterRecordYearAndMonth = DateTime.Now.ToShortDateString();
+            string strGetUsedTotalNumber = "";
+            DateTime dtMeterRecordYearAndMonth = GetReadYearAndMonthString(waterUserId);
+
             if (string.IsNullOrWhiteSpace(waterUserId))
             {
                 return decUsedTotalNumber;
             }
             using (var context = WDbContext())
             {
-                string strGetUsedTotalNumber = "SELECT SUM(TOTALNUMBER) AS TOTALNUMBER FROM readMeterRecord " +
-                        "WHERE DATEDIFF(YEAR,readMeterRecordDate,'" + strMeterRecordYearAndMonth + "')=0 AND checkState='1' AND chargeState<>'0' " +
+
+                if (dtMeterRecordYearAndMonth.Month >= 7)
+                    strGetUsedTotalNumber = "SELECT SUM(TOTALNUMBER) AS TOTALNUMBER FROM readMeterRecord " +
+                        "WHERE readMeterRecordYearAndMonth BETWEEN '" + dtMeterRecordYearAndMonth.Year.ToString() + "-07-01 00:00:00' " +
+"AND '" + dtMeterRecordYearAndMonth.AddYears(1).Year.ToString() + "-06-30 23:59:59'  AND checkState='1' AND chargeState<>'0' " +
                         "AND waterUserId='" + waterUserId + "'";
+                else
+                    strGetUsedTotalNumber = "SELECT SUM(TOTALNUMBER) AS TOTALNUMBER FROM readMeterRecord " +
+                        "WHERE readMeterRecordYearAndMonth BETWEEN '" + dtMeterRecordYearAndMonth.AddYears(-1).Year.ToString() + "-07-01 00:00:00' " +
+"AND '" + dtMeterRecordYearAndMonth.Year.ToString() + "-06-30 23:59:59'  AND checkState='1' AND chargeState<>'0' " +
+                        "AND waterUserId='" + waterUserId + "'";
+
+
+                //string strGetUsedTotalNumber = "SELECT SUM(TOTALNUMBER) AS TOTALNUMBER FROM readMeterRecord " +
+                //        "WHERE DATEDIFF(YEAR,readMeterRecordDate,'" + strMeterRecordYearAndMonth + "')=0 AND checkState='1' AND chargeState<>'0' " +
+                //        "AND waterUserId='" + waterUserId + "'";
                 decUsedTotalNumber = context.Sql(strGetUsedTotalNumber)
                     .QuerySingle<decimal>();
             }
@@ -1361,6 +1410,42 @@ namespace TestAndroid.DAL
                 return retStr;
             }
         }
+
+        public DateTime GetReadYearAndMonthString(string readMeterRecordID)
+        {
+            DateTime retStr = new DateTime();
+            if (string.IsNullOrWhiteSpace(readMeterRecordID))
+            {
+                return retStr;
+            }
+            using (var context = WDbContext())
+            {
+                string strSql = @"select top 1 readMeterRecordYearAndMonth from readMeterRecord with(nolock)
+                                where readMeterRecordId = @recordId";
+                retStr = context.Sql(strSql)
+                    .Parameter("recordId", readMeterRecordID)
+                    .QuerySingle<DateTime>();
+                return retStr;
+            }
+        }
+
+//        public string GetReadMonthString(string readMeterRecordID)
+//        {
+//            string retStr = "";
+//            if (string.IsNullOrWhiteSpace(readMeterRecordID))
+//            {
+//                return retStr;
+//            }
+//            using (var context = WDbContext())
+//            {
+//                string strSql = @"select top 1 Month(readMeterRecordYearAndMonth) from readMeterRecord with(nolock)
+//                                where readMeterRecordId = @recordId";
+//                retStr = context.Sql(strSql)
+//                    .Parameter("recordId", readMeterRecordID)
+//                    .QuerySingle<string>();
+//                return retStr;
+//            }
+//        }
 
         //走收打票收费
         public WUploadUserRes GetSingleFeeItemRes(WSingleUserItemReq SingleUserFeeItem)
@@ -1491,13 +1576,13 @@ namespace TestAndroid.DAL
             using (var context = WDbContext())
             {
                 //判断当天/当月
-//                --当天
-//SELECT COUNT(DISTINCT WATERUSERID) AS 用户数量,SUM(TOTALNUMBERCHARGE) AS 水量合计,SUM(CHARGEBCSS) AS 收费合计 FROM V_WATERFEECHARGE_READMETERRECORD
-//WHERE DATEDIFF(DAY,CHARGEDATETIME,GETDATE())=0 AND CHARGEWORKERID='收费员ID'
+                //                --当天
+                //SELECT COUNT(DISTINCT WATERUSERID) AS 用户数量,SUM(TOTALNUMBERCHARGE) AS 水量合计,SUM(CHARGEBCSS) AS 收费合计 FROM V_WATERFEECHARGE_READMETERRECORD
+                //WHERE DATEDIFF(DAY,CHARGEDATETIME,GETDATE())=0 AND CHARGEWORKERID='收费员ID'
 
-//--当月
-//SELECT COUNT(DISTINCT WATERUSERID) AS 用户数量,SUM(TOTALNUMBERCHARGE) AS 水量合计,SUM(CHARGEBCSS) AS 收费合计 FROM V_WATERFEECHARGE_READMETERRECORD
-//WHERE DATEDIFF(MONTH,CHARGEDATETIME,GETDATE())=0 AND CHARGEWORKERID='收费员ID'
+                //--当月
+                //SELECT COUNT(DISTINCT WATERUSERID) AS 用户数量,SUM(TOTALNUMBERCHARGE) AS 水量合计,SUM(CHARGEBCSS) AS 收费合计 FROM V_WATERFEECHARGE_READMETERRECORD
+                //WHERE DATEDIFF(MONTH,CHARGEDATETIME,GETDATE())=0 AND CHARGEWORKERID='收费员ID'
                 string strSql = "";
                 if (req.TJType)
                 {
@@ -1514,7 +1599,7 @@ WHERE DATEDIFF(DAY,CHARGEDATETIME,GETDATE())=0 AND CHARGEWORKERID=@loginId";
                 var retItem = context.Sql(strSql)
                      .Parameter("loginId", req.loginid)
                      .QuerySingle<WChargeInfoRes>();
-                    //.QueryMany<ChargeInfoItem>();
+                //.QueryMany<ChargeInfoItem>();
                 //WChargeInfoRes res = new WChargeInfoRes();
                 //res.chargeItem = retItem;
                 return retItem;
@@ -1572,6 +1657,6 @@ WHERE DATEDIFF(DAY,CHARGEDATETIME,GETDATE())=0 AND CHARGEWORKERID=@loginId";
         #endregion
 
 
-       
+
     }
 }
